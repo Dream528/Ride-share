@@ -1,19 +1,19 @@
-const express = require("express")
-const dotenv = require('dotenv')
-const mongoose = require('mongoose')
-const cors = require('cors')
-const cookieParser = require('cookie-parser')
-const axios = require('axios')
+const express = require("express");
+const dotenv = require("dotenv");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const axios = require("axios");
 
-const authRoute = require("./routes/auth.routes.js")
-const userRoute = require( "./routes/user.routes.js")
-const rideRoute = require("./routes/ride.routes.js")
-const { runRide } = require("./controllers/ride.js")
+const authRoute = require("./routes/auth.routes.js");
+const userRoute = require("./routes/user.routes.js");
+const rideRoute = require("./routes/ride.routes.js");
+const { runRide } = require("./controllers/ride.js");
 
-const app = express()
+const app = express();
 const PORT = 8080;
 
-dotenv.config()
+dotenv.config();
 
 const connectDB = (url) => {
   mongoose.set("strictQuery", true);
@@ -25,32 +25,33 @@ const connectDB = (url) => {
 };
 
 //middlewares
-app.use(cors({
+app.use(
+  cors({
     origin: process.env.ORIGIN,
     credentials: true,
     // allowedMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
-  }
-))
-app.use(cookieParser())
-app.use(express.json())
-runRide()
+  })
+);
+app.use(cookieParser());
+app.use(express.json());
+runRide();
 
 app.use("/api/users", userRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/rides", rideRoute);
 
-app.use((err, req, res, next)=>{
+app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;
   const errorMessage = err.message || "Something went wrong";
 
   return res.status(errorStatus).json({
     success: false,
     status: err.status,
-    error: errorMessage
-  })
-})
+    error: errorMessage,
+  });
+});
 
 app.listen(PORT, () => {
-  // connectDB()
-  console.log(`Connected to backend on PORT: ${PORT}`)
-})
+  connectDB();
+  console.log(`Connected to backend on PORT: ${PORT}`);
+});
